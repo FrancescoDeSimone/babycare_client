@@ -12,9 +12,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.io.UnsupportedEncodingException;
 
 
-
-
-
 class PahoMqttClient {
     private val TAG = "PahoMqttClient"
     private val mqttAndroidClient: MqttAndroidClient? = null
@@ -92,22 +89,6 @@ class PahoMqttClient {
             override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
                 Log.e(TAG, "Subscribe Failed $topic")
 
-            }
-        }
-    }
-
-    @Throws(MqttException::class)
-    fun unSubscribe(client: MqttAndroidClient, topic: String) {
-
-        val token = client.unsubscribe(topic)
-
-        token.actionCallback = object : IMqttActionListener {
-            override fun onSuccess(iMqttToken: IMqttToken) {
-                Log.d(TAG, "UnSubscribe Successfully $topic")
-            }
-
-            override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
-                Log.e(TAG, "UnSubscribe Failed $topic")
             }
         }
     }

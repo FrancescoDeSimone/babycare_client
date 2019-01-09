@@ -17,8 +17,11 @@ class MainActivity : AppCompatActivity() {
 
     fun startMqtt(v: View){
         val edit = findViewById(R.id.ip_edit) as EditText
-        val intent = Intent(this, BabyCare::class.java)
-        intent.putExtra("ip", edit.text.toString())
+        val conf = Configuration(edit.text.toString())
+        val service = BabyCareService(conf)
+        startService(Intent(this@MainActivity, service::class.java))
+        val intent = Intent(this@MainActivity, BabyCare::class.java)
+        intent.putExtra("Configuration", conf)
         startActivity(intent)
     }
 }

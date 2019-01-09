@@ -14,19 +14,17 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.android.service.MqttAndroidClient
 
-
-
-class BabyCareService : Service() {
+class BabyCareService(conf: Configuration) : Service() {
     private val TAG = "MqttMessageService"
     private var pahoMqttClient: PahoMqttClient? = null
     private var mqttAndroidClient: MqttAndroidClient? = null
-
+    private val configuration = conf
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate")
         pahoMqttClient = PahoMqttClient()
         mqttAndroidClient =
-                pahoMqttClient!!.getMqttClient(applicationContext, "", "")
+                pahoMqttClient!!.getMqttClient(applicationContext, configuration.MQTT_BROKER_URL, configuration.CLIENT_ID)
 
         mqttAndroidClient!!.setCallback(object : MqttCallbackExtended {
             override fun connectComplete(b: Boolean, s: String) {
