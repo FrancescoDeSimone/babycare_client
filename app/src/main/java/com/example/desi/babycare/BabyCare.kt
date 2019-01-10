@@ -1,5 +1,6 @@
 package com.example.desi.babycare
 
+import android.app.*
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -16,30 +17,22 @@ import org.json.JSONObject
 import java.io.UnsupportedEncodingException;
 import java.util.Timer
 import kotlin.concurrent.schedule
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
+import android.os.Build
 import android.support.v4.app.NotificationCompat
-import android.support.annotation.NonNull
-
-
-
 
 class BabyCare : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.baby_care_main)
-
         val ip = intent.getStringExtra("ip")
         conf = Configuration(ip)
         client = mqttClient.getMqttClient(getApplicationContext(), conf!!.MQTT_BROKER_URL, conf!!.CLIENT_ID)
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
-
         try {
             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
         } catch (ex: SecurityException) {
@@ -75,8 +68,13 @@ class BabyCare : AppCompatActivity() {
                                 if (message.getBoolean("warning")) "Critical condition detected" else "acceptable life parameters"
                     }
                     conf!!.SEAT_TOPIC -> {
-                        warningText.text = if (message.getBoolean("warning")) "Child left in the car" else ""
-                        sendNotification("BabyCare","Child left in the car")
+                        if (message.getBoolean("warning")) {
+                            warningText.text = "Child left in the car"
+                            sendNotification("BabyCare", "Child left in the car")
+                        }
+                            else
+                            warningText.text = ""
+
                     }
                 }
             }
@@ -107,24 +105,37 @@ class BabyCare : AppCompatActivity() {
     }
 
     private fun sendNotification(title: String, msg: String) {
-        val mBuilder = NotificationCompat.Builder(this)
-            .setContentTitle(title)
-            .setContentText(msg)
-        val resultIntent = Intent(this, BabyCare::class.java)
-
-        val stackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addParentStack(BabyCare::class.java)
-        stackBuilder.addNextIntent(resultIntent)
-        val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-        mBuilder.setContentIntent(resultPendingIntent)
-        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mNotificationManager.notify(100, mBuilder.build())
+        val mBuilder = NotificationCompat.Builder(applicationContext, "notify_001")
+        val ii = Intent(this.applicationContext, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, ii, 0)
+        val bigText = NotificationCompat.BigTextStyle()
+        bigText.setSummaryText("Warning message")
+        mBuilder.setContentIntent(pendingIntent)
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher_round)
+        mBuilder.setContentTitle(title)
+        mBuilder.setContentText(msg)
+        mBuilder.setPriority(Notification.PRIORITY_MAX)
+        mBuilder.setStyle(bigText)
+        mNotificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "YOUR_CHANNEL_ID"
+            val channel = NotificationChannel(
+                channelId,
+                "Channel human readable title",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            mNotificationManager!!.createNotificationChannel(channel)
+            mBuilder.setChannelId(channelId)
+        }
+        mNotificationManager!!.notify(0, mBuilder.build())
     }
+
 
     private var conf: Configuration? = null
     private val mqttClient = PahoMqttClient()
     private var locationManager: LocationManager? = null
     private var client: MqttAndroidClient? = null
+    private var mNotificationManager: NotificationManager? = null
 
 
     companion object {
