@@ -7,13 +7,72 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".MainActivity">
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <TextView
+                android:layout_marginTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temperature:"
+                android:textSize="30dp"
+                android:layout_marginLeft="10dp"
+        />
+        <TextView
+                android:layout_marginTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="36"
+                android:id="@+id/temperature"
+                android:textSize="30dp"
+                android:layout_marginLeft="10dp"
+        />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+        <TextView
+                android:layout_marginTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hearth:"
+                android:textSize="30dp"
+                android:layout_marginLeft="10dp"
+        />
+        <TextView
+                android:layout_marginTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="36"
+                android:id="@+id/beats"
+                android:textSize="30dp"
+                android:layout_marginLeft="10dp"
+        />
+    </LinearLayout>
+
     <TextView
             android:layout_marginTop="50dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="CIAO"
+            android:text="Warning"
+            android:id="@+id/healthCondition"
             android:textSize="30dp"
             android:textAlignment="center"
     />
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom">
+        <TextView
+                android:layout_marginTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/warning"
+                android:textSize="40dp"
+                android:textAlignment="center"
+        />
+    </LinearLayout>
 
 </LinearLayout>

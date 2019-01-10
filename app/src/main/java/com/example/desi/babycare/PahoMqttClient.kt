@@ -13,15 +13,34 @@ import java.io.UnsupportedEncodingException;
 
 
 class PahoMqttClient {
-    private val TAG = "PahoMqttClient"
-    private val mqttAndroidClient: MqttAndroidClient? = null
+    private var mqttAndroidClient: MqttAndroidClient? = null
+
+    private val disconnectedBufferOptions: DisconnectedBufferOptions
+        get() {
+            val disconnectedBufferOptions = DisconnectedBufferOptions()
+            disconnectedBufferOptions.isBufferEnabled = true
+            disconnectedBufferOptions.bufferSize = 100
+            disconnectedBufferOptions.isPersistBuffer = false
+            disconnectedBufferOptions.isDeleteOldestMessages = false
+            return disconnectedBufferOptions
+        }
+
+    private val mqttConnectionOption: MqttConnectOptions
+        get() {
+            val mqttConnectOptions = MqttConnectOptions()
+            mqttConnectOptions.isCleanSession = false
+            mqttConnectOptions.isAutomaticReconnect = true
+            return mqttConnectOptions
+        }
 
     fun getMqttClient(context: Context, brokerUrl: String, clientId: String): MqttAndroidClient? {
+
+        mqttAndroidClient = MqttAndroidClient(context, brokerUrl, clientId)
         try {
-            val token = mqttAndroidClient?.connect(getMqttConnectionOption())
-            token?.actionCallback = object : IMqttActionListener {
+            val token = mqttAndroidClient!!.connect(mqttConnectionOption)
+            token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    mqttAndroidClient?.setBufferOpts(getDisconnectedBufferOptions())
+                    mqttAndroidClient!!.setBufferOpts(disconnectedBufferOptions)
                     Log.d(TAG, "Success")
                 }
 
@@ -36,41 +55,9 @@ class PahoMqttClient {
         return mqttAndroidClient
     }
 
-    @Throws(MqttException::class)
-    fun disconnect(client: MqttAndroidClient) {
-        val mqttToken = client.disconnect()
-        mqttToken.actionCallback = object : IMqttActionListener {
-            override fun onSuccess(iMqttToken: IMqttToken) {
-                Log.d(TAG, "Successfully disconnected")
-            }
-
-            override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
-                Log.d(TAG, "Failed to disconnected " + throwable.toString())
-            }
-        }
-    }
-
-    private fun getDisconnectedBufferOptions(): DisconnectedBufferOptions {
-        val disconnectedBufferOptions = DisconnectedBufferOptions()
-        disconnectedBufferOptions.isBufferEnabled = true
-        disconnectedBufferOptions.bufferSize = 100
-        disconnectedBufferOptions.isPersistBuffer = false
-        disconnectedBufferOptions.isDeleteOldestMessages = false
-        return disconnectedBufferOptions
-    }
-
-    private fun getMqttConnectionOption(): MqttConnectOptions {
-        val mqttConnectOptions = MqttConnectOptions()
-        mqttConnectOptions.isCleanSession = false
-        mqttConnectOptions.isAutomaticReconnect = true
-        return mqttConnectOptions
-    }
-
-
     @Throws(MqttException::class, UnsupportedEncodingException::class)
     fun publishMessage(client: MqttAndroidClient, msg: String, qos: Int, topic: String) {
-        var encodedPayload = ByteArray(0) //check this
-        encodedPayload = msg.toByteArray(charset("UTF-8"))
+        var encodedPayload = msg.toByteArray(charset("UTF-8"))
         val message = MqttMessage(encodedPayload)
         message.id = 320
         message.isRetained = true
@@ -91,5 +78,10 @@ class PahoMqttClient {
 
             }
         }
+    }
+
+    companion object {
+
+        private val TAG = "PahoMqttClient"
     }
 }

@@ -1,13 +1,13 @@
 package com.example.desi.babycare
 
-import java.io.Serializable
+class Configuration(ip: String) {
+    val MQTT_BROKER_URL = "tcp://" + ip + ":1883"
 
-class Configuration(ip: String): Serializable {
-        val MQTT_BROKER_URL = "tcp://"+ip+":1883"
+    val POSITION_TOPIC = "babycare/position"
 
-        val POSITION_TOPIC = "babycare/position"
+    val SEAT_TOPIC = "babycare/childseat"
 
-        val SEAT_TOPIC = "babycare/childseat"
+    val HEALTH_TOPIC = "babycare/health"
 
-        val CLIENT_ID = "guest"
+    val CLIENT_ID = "guest"
 }
