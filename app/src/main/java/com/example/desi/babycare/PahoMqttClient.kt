@@ -5,23 +5,20 @@ import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
-import android.util.Log;
-import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import java.io.UnsupportedEncodingException;
+import android.util.Log
+import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions
+import org.eclipse.paho.client.mqttv3.MqttMessage
+import java.io.UnsupportedEncodingException
 
 
 class PahoMqttClient {
     private var mqttAndroidClient: MqttAndroidClient? = null
-
     private val disconnectedBufferOptions: DisconnectedBufferOptions
         get() {
             val disconnectedBufferOptions = DisconnectedBufferOptions()
             disconnectedBufferOptions.isBufferEnabled = true
             disconnectedBufferOptions.bufferSize = 100
-            disconnectedBufferOptions.isPersistBuffer = false
-            disconnectedBufferOptions.isDeleteOldestMessages = false
             return disconnectedBufferOptions
         }
 
@@ -33,7 +30,7 @@ class PahoMqttClient {
             return mqttConnectOptions
         }
 
-    fun getMqttClient(context: Context, brokerUrl: String, clientId: String): MqttAndroidClient? {
+    fun getMqttClient(context: Context, brokerUrl: String, clientId: String, onConnection: ()-> Unit): MqttAndroidClient? {
 
         mqttAndroidClient = MqttAndroidClient(context, brokerUrl, clientId)
         try {
@@ -41,6 +38,8 @@ class PahoMqttClient {
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     mqttAndroidClient!!.setBufferOpts(disconnectedBufferOptions)
+                    if(onConnection != null)
+                        onConnection()
                     Log.d(TAG, "Success")
                 }
 

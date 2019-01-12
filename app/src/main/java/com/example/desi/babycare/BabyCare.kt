@@ -14,9 +14,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.json.JSONObject
-import java.io.UnsupportedEncodingException;
-import java.util.Timer
-import kotlin.concurrent.schedule
+import java.io.UnsupportedEncodingException
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -30,7 +28,11 @@ class BabyCare : AppCompatActivity() {
         setContentView(R.layout.baby_care_main)
         val ip = intent.getStringExtra("ip")
         conf = Configuration(ip)
-        client = mqttClient.getMqttClient(getApplicationContext(), conf!!.MQTT_BROKER_URL, conf!!.CLIENT_ID)
+        client =
+                mqttClient.getMqttClient(applicationContext, conf!!.MQTT_BROKER_URL, conf!!.CLIENT_ID) {
+                    mqttClient.subscribe(client!!, conf!!.HEALTH_TOPIC, 0)
+                    mqttClient.subscribe(client!!, conf!!.SEAT_TOPIC, 1)
+                }
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         try {
@@ -38,28 +40,17 @@ class BabyCare : AppCompatActivity() {
         } catch (ex: SecurityException) {
             Log.d(TAG, "Security Exception, no location available")
         }
-
-        //find bug in library?????
-        Timer("SettingUp", false).schedule(1000) {
-            mqttClient.subscribe(client!!, conf!!.HEALTH_TOPIC, 0)
-            mqttClient.subscribe(client!!, conf!!.SEAT_TOPIC, 1)
-        }
         client!!.setCallback(object : MqttCallbackExtended {
-            override fun connectComplete(b: Boolean, s: String) {
-
-            }
-
-            override fun connectionLost(throwable: Throwable) {
-
-            }
+            override fun connectComplete(b: Boolean, s: String) {}
+            override fun connectionLost(throwable: Throwable) {}
 
             @Throws(Exception::class)
             override fun messageArrived(s: String, mqttMessage: MqttMessage) {
                 var message = JSONObject(String(mqttMessage.payload))
-                val temperature: TextView = findViewById(R.id.temperature) as TextView
-                val beats: TextView = findViewById(R.id.beats) as TextView
-                val healthWarning: TextView = findViewById(R.id.healthCondition) as TextView
-                val warningText: TextView = findViewById(R.id.warning) as TextView
+                val temperature: TextView = findViewById(R.id.temperature)
+                val beats: TextView = findViewById(R.id.beats)
+                val healthWarning: TextView = findViewById(R.id.healthCondition)
+                val warningText: TextView = findViewById(R.id.warning)
                 when (s) {
                     conf!!.HEALTH_TOPIC -> {
                         temperature.text = message.getInt("temp").toString()
@@ -71,17 +62,13 @@ class BabyCare : AppCompatActivity() {
                         if (message.getBoolean("warning")) {
                             warningText.text = "Child left in the car"
                             sendNotification("BabyCare", "Child left in the car")
-                        }
-                            else
+                        } else
                             warningText.text = ""
 
                     }
                 }
             }
-
-            override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {
-
-            }
+            override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {}
         })
     }
 
@@ -98,7 +85,6 @@ class BabyCare : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
-
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
@@ -114,14 +100,14 @@ class BabyCare : AppCompatActivity() {
         mBuilder.setSmallIcon(R.mipmap.ic_launcher_round)
         mBuilder.setContentTitle(title)
         mBuilder.setContentText(msg)
-        mBuilder.setPriority(Notification.PRIORITY_MAX)
+        mBuilder.priority = Notification.PRIORITY_MAX
         mBuilder.setStyle(bigText)
         mNotificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "YOUR_CHANNEL_ID"
+            val channelId = "0"
             val channel = NotificationChannel(
                 channelId,
-                "Channel human readable title",
+                "BabyCare",
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             mNotificationManager!!.createNotificationChannel(channel)
@@ -130,13 +116,11 @@ class BabyCare : AppCompatActivity() {
         mNotificationManager!!.notify(0, mBuilder.build())
     }
 
-
     private var conf: Configuration? = null
     private val mqttClient = PahoMqttClient()
     private var locationManager: LocationManager? = null
     private var client: MqttAndroidClient? = null
     private var mNotificationManager: NotificationManager? = null
-
 
     companion object {
 

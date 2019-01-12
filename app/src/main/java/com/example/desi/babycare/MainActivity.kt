@@ -6,18 +6,16 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 
-
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 
     fun startMqtt(v: View) {
-        val edit = findViewById(R.id.ip_edit) as EditText
+        val edit: EditText = findViewById(R.id.ip_edit)
         val intent = Intent(this@MainActivity, BabyCare::class.java)
-        intent.putExtra("ip",edit.text.toString())
+        intent.putExtra("ip", edit.text.toString())
         startActivity(intent)
     }
 }
