@@ -30,7 +30,12 @@ class PahoMqttClient {
             return mqttConnectOptions
         }
 
-    fun getMqttClient(context: Context, brokerUrl: String, clientId: String, onConnection: ()-> Unit): MqttAndroidClient? {
+    fun getMqttClient(
+        context: Context,
+        brokerUrl: String,
+        clientId: String,
+        onConnection: () -> Unit
+    ): MqttAndroidClient? {
 
         mqttAndroidClient = MqttAndroidClient(context, brokerUrl, clientId)
         try {
@@ -38,8 +43,7 @@ class PahoMqttClient {
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     mqttAndroidClient!!.setBufferOpts(disconnectedBufferOptions)
-                    if(onConnection != null)
-                        onConnection()
+                    onConnection()
                     Log.d(TAG, "Success")
                 }
 
@@ -56,7 +60,7 @@ class PahoMqttClient {
 
     @Throws(MqttException::class, UnsupportedEncodingException::class)
     fun publishMessage(client: MqttAndroidClient, msg: String, qos: Int, topic: String) {
-        var encodedPayload = msg.toByteArray(charset("UTF-8"))
+        val encodedPayload = msg.toByteArray(charset("UTF-8"))
         val message = MqttMessage(encodedPayload)
         message.id = 320
         message.isRetained = true

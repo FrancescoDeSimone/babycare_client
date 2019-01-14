@@ -46,7 +46,7 @@ class BabyCare : AppCompatActivity() {
 
             @Throws(Exception::class)
             override fun messageArrived(s: String, mqttMessage: MqttMessage) {
-                var message = JSONObject(String(mqttMessage.payload))
+                val message = JSONObject(String(mqttMessage.payload))
                 val temperature: TextView = findViewById(R.id.temperature)
                 val beats: TextView = findViewById(R.id.beats)
                 val healthWarning: TextView = findViewById(R.id.healthCondition)
@@ -68,6 +68,7 @@ class BabyCare : AppCompatActivity() {
                     }
                 }
             }
+
             override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {}
         })
     }
@@ -85,6 +86,7 @@ class BabyCare : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
