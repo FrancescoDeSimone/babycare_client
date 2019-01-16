@@ -28,18 +28,19 @@ class BabyCare : AppCompatActivity() {
         setContentView(R.layout.baby_care_main)
         val ip = intent.getStringExtra("ip")
         conf = Configuration(ip)
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+
         client =
                 mqttClient.getMqttClient(applicationContext, conf!!.MQTT_BROKER_URL, conf!!.CLIENT_ID) {
                     mqttClient.subscribe(client!!, conf!!.HEALTH_TOPIC, 0)
                     mqttClient.subscribe(client!!, conf!!.SEAT_TOPIC, 1)
+                    try {
+                        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+                    } catch (ex: SecurityException) {
+                        Log.d(TAG, "Security Exception, no location available")
+                    }
                 }
 
-        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
-        try {
-            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
-        } catch (ex: SecurityException) {
-            Log.d(TAG, "Security Exception, no location available")
-        }
         client!!.setCallback(object : MqttCallbackExtended {
             override fun connectComplete(b: Boolean, s: String) {}
             override fun connectionLost(throwable: Throwable) {}
