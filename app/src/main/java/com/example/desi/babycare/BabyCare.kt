@@ -63,6 +63,16 @@ class BabyCare : AppCompatActivity() {
                         if (message.getBoolean("warning")) {
                             warningText.text = "Child left in the car"
                             sendNotification("BabyCare", "Child left in the car")
+                            try {
+                                val position = JSONObject()
+                                position.put("longitude", loc!!.longitude)
+                                position.put("latitude", loc!!.latitude)
+                                mqttClient.publishMessage(client!!, position.toString(), 0, conf!!.POSITION_TOPIC)
+                            } catch (e: MqttException) {
+                                e.printStackTrace()
+                            } catch (e: UnsupportedEncodingException) {
+                                e.printStackTrace()
+                            }
                         } else
                             warningText.text = ""
 
@@ -76,16 +86,7 @@ class BabyCare : AppCompatActivity() {
 
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            try {
-                val position = JSONObject()
-                position.put("longitude", location.longitude)
-                position.put("latitude", location.latitude)
-                mqttClient.publishMessage(client!!, position.toString(), 0, conf!!.POSITION_TOPIC)
-            } catch (e: MqttException) {
-                e.printStackTrace()
-            } catch (e: UnsupportedEncodingException) {
-                e.printStackTrace()
-            }
+            loc = location
         }
 
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
@@ -124,7 +125,7 @@ class BabyCare : AppCompatActivity() {
     private var locationManager: LocationManager? = null
     private var client: MqttAndroidClient? = null
     private var mNotificationManager: NotificationManager? = null
-
+    private var loc: Location? = null
     companion object {
 
         private val TAG = "BabyCare"
