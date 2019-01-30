@@ -8,49 +8,59 @@
         android:orientation="vertical"
         tools:context=".MainActivity">
     <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-        <TextView
-                android:layout_marginTop="50dp"
-                android:layout_width="match_parent"
+        <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Temperature:"
-                android:textSize="30dp"
-                android:layout_marginLeft="10dp"
-        />
-        <TextView
-                android:layout_marginTop="50dp"
-                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="end">
+            <TextView
+                    android:layout_marginTop="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Temperature:"
+                    android:textSize="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:textAlignment="viewEnd"
+                    android:layout_gravity="end"
+            />
+            <TextView
+                    android:layout_marginTop="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Heartbeats:"
+                    android:textSize="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:textAlignment="viewEnd"
+                    android:layout_gravity="end"
+            />
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Not Detected"
-                android:id="@+id/temperature"
-                android:textSize="30dp"
-                android:layout_marginLeft="10dp"
-        />
+                android:orientation="vertical">
+            <TextView
+                    android:layout_marginTop="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Not Detected"
+                    android:id="@+id/temperature"
+                    android:textSize="30dp"
+                    android:layout_marginLeft="10dp"
+            />
+            <TextView
+                    android:layout_marginTop="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Not Detected"
+                    android:id="@+id/beats"
+                    android:textSize="30dp"
+                    android:layout_marginLeft="10dp"
+            />
+        </LinearLayout>
     </LinearLayout>
-    <LinearLayout android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:orientation="horizontal">
-        <TextView
-                android:layout_marginTop="50dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Hearth:"
-                android:textSize="30dp"
-                android:layout_marginLeft="10dp"
-        />
-        <TextView
-                android:layout_marginTop="50dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Not Detected"
-                android:id="@+id/beats"
-                android:textSize="30dp"
-                android:layout_marginLeft="10dp"
-        />
-    </LinearLayout>
-
     <TextView
             android:layout_marginTop="50dp"
             android:layout_width="match_parent"

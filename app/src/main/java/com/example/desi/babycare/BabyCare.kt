@@ -55,7 +55,7 @@ class BabyCare : AppCompatActivity() {
                 when (s) {
                     conf!!.HEALTH_TOPIC -> {
                         temperature.text = message.getInt("temp").toString()
-                        beats.text = message.getInt("hearth").toString()
+                        beats.text = message.getInt("heart").toString()
                         healthWarning.text =
                                 if (message.getBoolean("warning")) "Critical condition detected" else "acceptable life parameters"
                     }
